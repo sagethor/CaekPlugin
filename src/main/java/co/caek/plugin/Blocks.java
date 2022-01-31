@@ -28,13 +28,12 @@ public class Blocks implements Listener {
     public static void dropItems(Location loc, ItemStack A, ItemStack B) {
         if (A.getType() == AIR | A.getType() == AIR) return;
         loc.getBlock().setType(AIR);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-            public void run() {
-                loc.getWorld().dropItemNaturally(loc.add(0.5, 0.5, 0.5), A);
-                loc.getWorld().dropItemNaturally(loc.add(0.5, 0.5, 0.5), B);
-            }
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+            loc.getWorld().dropItemNaturally(loc.add(0.5, 0.5, 0.5), A);
+            loc.getWorld().dropItemNaturally(loc.add(0.5, 0.5, 0.5), B);
         }, 0);
     }
+    // Do we refactor this like in the Block module with ItemStack?
     public void dropItems(Location loc, Material A, int ctA, ItemStack B) { dropItems(loc, new ItemStack(A, ctA), B); }
     public void dropItems(Location loc, ItemStack A, Material B, int ctB) { dropItems(loc, A, new ItemStack(B, ctB)); }
     public void dropItems(Location loc, Material A, int ctA, Material B, int ctB) { dropItems(loc, new ItemStack(A, ctA), new ItemStack(B, ctB)); }
@@ -43,6 +42,16 @@ public class Blocks implements Listener {
     public void dropItems(Location loc, Material A, Material B) { dropItems(loc, new ItemStack(A, 1), new ItemStack(B, 1)); }
     public void dropItems(Location loc, Material A, int ctA, Material B) { dropItems(loc, new ItemStack(A, ctA), new ItemStack(B, 1)); }
     public void dropItems(Location loc, Material A, Material B, int ctB) { dropItems(loc, new ItemStack(A, 1), new ItemStack(B, ctB)); }
+
+    // Quick helper function
+    public static boolean typeNSEW(Location loc, Material material) {
+        return loc.add(1,0,0).getBlock().getType() == material
+                | loc.subtract(1,0,0).getBlock().getType() == material
+                | loc.add(0,1,0).getBlock().getType() == material
+                | loc.subtract(0,1,0).getBlock().getType() == material
+                | loc.add(0,0,1).getBlock().getType() == material
+                | loc.subtract(0,0,1).getBlock().getType() == material;
+    }
 
     @EventHandler
     // CALLED WHEN BLOCK BROKEN BY PLAYER.
@@ -57,15 +66,33 @@ public class Blocks implements Listener {
         event.setCancelled(true);
         boolean destroy = false;
         switch (block.getType()) {
-            // leaves - if NSEW to similar log, drop a sapling?
             // how do we handle getting sticks
             // LEAVES
-            case ACACIA_LEAVES -> dropItem(loc, ACACIA_LEAVES);
-            case BIRCH_LEAVES -> dropItem(loc, BIRCH_LEAVES);
-            case DARK_OAK_LEAVES -> dropItem(loc, DARK_OAK_LEAVES);
-            case JUNGLE_LEAVES -> dropItem(loc, JUNGLE_LEAVES);
-            case OAK_LEAVES -> dropItem(loc, OAK_LEAVES);
-            case SPRUCE_LEAVES -> dropItem(loc, SPRUCE_LEAVES);
+            case ACACIA_LEAVES -> {
+                if (typeNSEW(loc, ACACIA_LOG)) dropItem(loc, ACACIA_SAPLING);
+                else dropItem(loc, ACACIA_LEAVES);
+            }
+            case BIRCH_LEAVES -> {
+                if (typeNSEW(loc, BIRCH_LOG)) dropItem(loc, BIRCH_SAPLING);
+                else dropItem(loc, BIRCH_LEAVES);
+            }
+            case DARK_OAK_LEAVES -> {
+                if (typeNSEW(loc, DARK_OAK_LOG)) dropItem(loc, DARK_OAK_SAPLING);
+                else dropItem(loc, DARK_OAK_LEAVES);
+            }
+            case JUNGLE_LEAVES -> {
+                if (typeNSEW(loc, JUNGLE_LOG)) dropItem(loc, JUNGLE_SAPLING);
+                else dropItem(loc, JUNGLE_LEAVES);
+            }
+            case OAK_LEAVES -> {
+                if (typeNSEW(loc, OAK_LOG)) dropItem(loc, OAK_SAPLING);
+                else dropItem(loc, OAK_LEAVES);
+            }
+            case SPRUCE_LEAVES -> {
+                if (typeNSEW(loc, SPRUCE_LOG)) dropItem(loc, SPRUCE_SAPLING);
+                else dropItem(loc, SPRUCE_LEAVES);
+            }
+            case AZALEA_LEAVES -> dropItem(loc, AZALEA_LEAVES);
             // FLORA
             case GRASS -> dropItem(loc, GRASS);
             case FERN -> dropItem(loc, FERN);
