@@ -14,35 +14,70 @@ import static co.caek.plugin.CaekPlugin.plugin;
 import static org.bukkit.Material.*;
 
 public class Blocks implements Listener {
+    // Quick function to make typing stuff out less annoying.
+    static public ItemStack IS(Material material) {
+        return new ItemStack(material);
+    }
+    static public ItemStack IS(Material material, int amt) {
+        return new ItemStack(material, amt);
+    }
+    
+    // Drop (1) ItemStack when a particular block is broken.
     public static void dropItem(Location loc, ItemStack item) {
-        if (item.getType() == AIR) return;
         loc.getBlock().setType(AIR);
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () ->
-                loc.getWorld().dropItemNaturally(loc.add(0.5, 0.5, 0.5), item), 0); // delay dropping item
+                loc.getWorld().dropItemNaturally(loc.add(0.5,0.5,0.5), item), 0); // delay dropping item
     }
-    public static void dropItem(Location loc, Material material, int amt) {
-        if (amt != 0) { dropItem(loc, new ItemStack(material, amt)); }
+    // Drop (1) Material when a particular block is broken.
+    public static void dropItem(Location loc, Material A, int amt) {
+        if (amt != 0) { dropItem(loc, IS(A, amt)); }
     }
-    public static void dropItem(Location loc, Material material) { dropItem(loc, material, 1); }
-
+    public static void dropItem(Location loc, Material A) {
+        dropItem(loc, A, 1);
+    }
+    // Drop (2) ItemStacks when a particular block is broken.
     public static void dropItems(Location loc, ItemStack A, ItemStack B) {
-        if (A.getType() == AIR | A.getType() == AIR) return;
         loc.getBlock().setType(AIR);
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-            loc.getWorld().dropItemNaturally(loc.add(0.5, 0.5, 0.5), A);
-            loc.getWorld().dropItemNaturally(loc.add(0.5, 0.5, 0.5), B);
+            loc.getWorld().dropItemNaturally(loc.add(0.5,0.5,0.5), A);
+            loc.getWorld().dropItemNaturally(loc.add(0.5,0.5,0.5), B);
         }, 0);
     }
-    // Do we refactor this like in the Block module with ItemStack?
-    public void dropItems(Location loc, Material A, int ctA, ItemStack B) { dropItems(loc, new ItemStack(A, ctA), B); }
-    public void dropItems(Location loc, ItemStack A, Material B, int ctB) { dropItems(loc, A, new ItemStack(B, ctB)); }
-    public void dropItems(Location loc, Material A, int ctA, Material B, int ctB) { dropItems(loc, new ItemStack(A, ctA), new ItemStack(B, ctB)); }
-    public void dropItems(Location loc, Material A, ItemStack B) { dropItems(loc, new ItemStack(A, 1), B); }
-    public void dropItems(Location loc, ItemStack A, Material B) { dropItems(loc, A, new ItemStack(B, 1)); }
-    public void dropItems(Location loc, Material A, Material B) { dropItems(loc, new ItemStack(A, 1), new ItemStack(B, 1)); }
-    public void dropItems(Location loc, Material A, int ctA, Material B) { dropItems(loc, new ItemStack(A, ctA), new ItemStack(B, 1)); }
-    public void dropItems(Location loc, Material A, Material B, int ctB) { dropItems(loc, new ItemStack(A, 1), new ItemStack(B, ctB)); }
+    // Drop (2) Materials when a particular block is broken.
+    public static void dropItems(Location loc, Material A, int amtA, Material B, int amtB) {
+        loc.getBlock().setType(AIR);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+            loc.getWorld().dropItemNaturally(loc.add(0.5,0.5,0.5), IS(A, amtA));
+            loc.getWorld().dropItemNaturally(loc.add(0.5,0.5,0.5), IS(B, amtB));
+        }, 0);
+    }
+    public static void dropItems(Location loc, Material A, Material B) {
+        dropItems(loc, A, 1, B, 1);
+    }
+    // Drop (3) ItemStacks when a particular block is broken.
+    public static void dropItems(Location loc, ItemStack A, ItemStack B, ItemStack C) {
+        loc.getBlock().setType(AIR);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+            loc.getWorld().dropItemNaturally(loc.add(0.5,0.5,0.5), A);
+            loc.getWorld().dropItemNaturally(loc.add(0.5,0.5,0.5), B);
+            loc.getWorld().dropItemNaturally(loc.add(.5,.5,.5), C);
+        }, 0);
+    }
+    // Drop (3) Materials when a particular block is broken.
+    public static void dropItems(Location loc, Material A, int amtA, Material B, int amtB, Material C, int amtC) {
+        loc.getBlock().setType(AIR);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+            loc.getWorld().dropItemNaturally(loc.add(0.5,0.5,0.5), IS(A, amtA));
+            loc.getWorld().dropItemNaturally(loc.add(0.5,0.5,0.5), IS(B, amtB));
+            loc.getWorld().dropItemNaturally(loc.add(.5,.5,.5), IS(C, amtC));
+        }, 0);
+    }
+    public static void dropItems(Location loc, Material A, Material B, Material C) {
+        dropItems(loc, A, 1, B, 1, C, 1);
+    }
 
+    // Add more where necessary...
+    
     // Quick helper function
     public static boolean typeNSEW(Location loc, Material material) {
         return loc.add(1,0,0).getBlock().getType() == material
@@ -122,11 +157,11 @@ public class Blocks implements Listener {
             case PEONY -> dropItem(loc, PEONY);
             // FARMING
             case WHEAT -> {
-                if (((Ageable) data).getAge() == ((Ageable) data).getMaximumAge()) dropItems(loc, WHEAT, WHEAT_SEEDS, 2);
+                if (((Ageable) data).getAge() == ((Ageable) data).getMaximumAge()) dropItems(loc, WHEAT, 1, WHEAT_SEEDS, 2);
                 else dropItem(loc, WHEAT_SEEDS);
             }
             case BEETROOTS -> {
-                if (((Ageable) data).getAge() == ((Ageable) data).getMaximumAge()) dropItems(loc, BEETROOT, BEETROOT_SEEDS, 2);
+                if (((Ageable) data).getAge() == ((Ageable) data).getMaximumAge()) dropItems(loc, BEETROOT, 1, BEETROOT_SEEDS, 2);
                 else dropItem(loc, BEETROOT_SEEDS);
             }
         }

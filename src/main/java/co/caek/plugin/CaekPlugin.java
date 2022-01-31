@@ -1,6 +1,7 @@
 package co.caek.plugin;
 
 import org.bukkit.*;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.world.WorldInitEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
@@ -34,6 +35,7 @@ public class CaekPlugin extends JavaPlugin {
         manager.registerEvents(new Character(), this);
     }
 
+    @EventHandler
     public void onWorldInitEvent(WorldInitEvent event) {
         // compare this against config files
         World w = event.getWorld();
