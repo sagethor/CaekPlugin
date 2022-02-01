@@ -11,6 +11,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -254,60 +255,27 @@ public class Blocks implements Listener {
     // Flint can be made into handaxes which break 1/16 times.
 
     // VERIFY TOOLS LOSE DURABILITY?
-
-    // Digging tool list (placeholder)
+    
+    // Generic HashSet mass constructor
+    public static void makeMaterialList(Set<Material> set, Material ... materials) {
+        set.addAll(Arrays.asList(materials));
+    }
+    // PLACEHOLDER TOOL LISTS
     public static final Set<Material> DIG_TOOL = new HashSet<>();
-    static {
-        DIG_TOOL.add(Material.WOODEN_SHOVEL);
-        DIG_TOOL.add(Material.STONE_SHOVEL);
-        DIG_TOOL.add(Material.IRON_SHOVEL);
-        DIG_TOOL.add(Material.GOLDEN_SHOVEL);
-        DIG_TOOL.add(Material.DIAMOND_SHOVEL);
-        DIG_TOOL.add(Material.NETHERITE_SHOVEL);
-    }
-
-    // Chopping tool list (placeholder)
     public static final Set<Material> CHOP_TOOL = new HashSet<>();
-    static {
-        CHOP_TOOL.add(Material.WOODEN_AXE);
-        CHOP_TOOL.add(Material.STONE_AXE);
-        CHOP_TOOL.add(Material.IRON_AXE);
-        CHOP_TOOL.add(Material.GOLDEN_AXE);
-        CHOP_TOOL.add(Material.DIAMOND_AXE);
-        CHOP_TOOL.add(Material.NETHERITE_AXE);
-    }
-
-    // Mining tool list (placeholder)
     public static final Set<Material> MINE_TOOL = new HashSet<>();
-    static {
-        MINE_TOOL.add(Material.WOODEN_PICKAXE);
-        MINE_TOOL.add(Material.STONE_PICKAXE);
-        MINE_TOOL.add(Material.IRON_PICKAXE);
-        MINE_TOOL.add(Material.GOLDEN_PICKAXE);
-        MINE_TOOL.add(Material.DIAMOND_PICKAXE);
-        MINE_TOOL.add(Material.NETHERITE_PICKAXE);
-    }
-
-    // Cutting tool list (placeholder)
     public static final Set<Material> CUT_TOOL = new HashSet<>();
-    static {
-        CUT_TOOL.add(Material.WOODEN_SWORD);
-        CUT_TOOL.add(Material.STONE_SWORD);
-        CUT_TOOL.add(Material.IRON_SWORD);
-        CUT_TOOL.add(Material.GOLDEN_SWORD);
-        CUT_TOOL.add(Material.DIAMOND_SWORD);
-        CUT_TOOL.add(Material.NETHERITE_SWORD);
-        // CUT_TOOL.add(Material.SHEARS);
-    }
-
-    // Clearing tool list (placeholder)
     public static final Set<Material> CLEAR_TOOL = new HashSet<>();
     static {
-        CLEAR_TOOL.add(Material.WOODEN_HOE);
-        CLEAR_TOOL.add(Material.STONE_HOE);
-        CLEAR_TOOL.add(Material.IRON_HOE);
-        CLEAR_TOOL.add(Material.GOLDEN_HOE);
-        CLEAR_TOOL.add(Material.DIAMOND_HOE);
-        CLEAR_TOOL.add(Material.NETHERITE_HOE);
+        makeMaterialList(DIG_TOOL, WOODEN_SHOVEL, STONE_SHOVEL, IRON_SHOVEL,
+                GOLDEN_SHOVEL, DIAMOND_SHOVEL, NETHERITE_SHOVEL);
+        makeMaterialList(CHOP_TOOL, WOODEN_AXE, STONE_AXE, IRON_AXE,
+                GOLDEN_AXE, DIAMOND_AXE, NETHERITE_AXE);
+        makeMaterialList(MINE_TOOL, WOODEN_PICKAXE, STONE_PICKAXE, IRON_PICKAXE,
+                GOLDEN_PICKAXE, DIAMOND_PICKAXE, NETHERITE_PICKAXE);
+        makeMaterialList(CUT_TOOL, WOODEN_SWORD, STONE_SWORD, IRON_SWORD,
+                GOLDEN_SWORD, DIAMOND_SWORD, NETHERITE_SWORD);
+        makeMaterialList(CLEAR_TOOL, WOODEN_HOE, STONE_HOE, IRON_HOE,
+                GOLDEN_HOE, DIAMOND_HOE, NETHERITE_HOE);
     }
 }
