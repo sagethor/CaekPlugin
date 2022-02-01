@@ -4,11 +4,15 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.type.Leaves;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import static co.caek.plugin.CaekPlugin.plugin;
 import static org.bukkit.Material.*;
@@ -24,9 +28,11 @@ public class Blocks implements Listener {
     
     // Drop (1) ItemStack when a particular block is broken.
     public static void dropItem(Location loc, ItemStack item) {
-        loc.getBlock().setType(AIR);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () ->
-                loc.getWorld().dropItemNaturally(loc.add(0.5,0.5,0.5), item), 0); // delay dropping item
+        if (item.getType() == AIR) return; // CANNOT DROP AIR ERROR
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+            loc.getWorld().dropItemNaturally(loc.add(0.5,0.5,0.5), item);
+            loc.getBlock().setType(AIR);
+        }, 0); // delay dropping item
     }
     // Drop (1) Material when a particular block is broken.
     public static void dropItem(Location loc, Material A, int amt) {
@@ -37,18 +43,20 @@ public class Blocks implements Listener {
     }
     // Drop (2) ItemStacks when a particular block is broken.
     public static void dropItems(Location loc, ItemStack A, ItemStack B) {
-        loc.getBlock().setType(AIR);
+
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
             loc.getWorld().dropItemNaturally(loc.add(0.5,0.5,0.5), A);
             loc.getWorld().dropItemNaturally(loc.add(0.5,0.5,0.5), B);
+            loc.getBlock().setType(AIR);
         }, 0);
+
     }
     // Drop (2) Materials when a particular block is broken.
     public static void dropItems(Location loc, Material A, int amtA, Material B, int amtB) {
-        loc.getBlock().setType(AIR);
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
             loc.getWorld().dropItemNaturally(loc.add(0.5,0.5,0.5), IS(A, amtA));
             loc.getWorld().dropItemNaturally(loc.add(0.5,0.5,0.5), IS(B, amtB));
+            loc.getBlock().setType(AIR);
         }, 0);
     }
     public static void dropItems(Location loc, Material A, Material B) {
@@ -56,20 +64,21 @@ public class Blocks implements Listener {
     }
     // Drop (3) ItemStacks when a particular block is broken.
     public static void dropItems(Location loc, ItemStack A, ItemStack B, ItemStack C) {
-        loc.getBlock().setType(AIR);
+
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
             loc.getWorld().dropItemNaturally(loc.add(0.5,0.5,0.5), A);
             loc.getWorld().dropItemNaturally(loc.add(0.5,0.5,0.5), B);
             loc.getWorld().dropItemNaturally(loc.add(.5,.5,.5), C);
+            loc.getBlock().setType(AIR);
         }, 0);
     }
     // Drop (3) Materials when a particular block is broken.
     public static void dropItems(Location loc, Material A, int amtA, Material B, int amtB, Material C, int amtC) {
-        loc.getBlock().setType(AIR);
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
             loc.getWorld().dropItemNaturally(loc.add(0.5,0.5,0.5), IS(A, amtA));
             loc.getWorld().dropItemNaturally(loc.add(0.5,0.5,0.5), IS(B, amtB));
             loc.getWorld().dropItemNaturally(loc.add(.5,.5,.5), IS(C, amtC));
+            loc.getBlock().setType(AIR);
         }, 0);
     }
     public static void dropItems(Location loc, Material A, Material B, Material C) {
@@ -77,6 +86,20 @@ public class Blocks implements Listener {
     }
 
     // Add more where necessary...
+
+    // IMPLEMENTED QUICKLY FOR MINING
+    // Drop (1) ItemStack when a particular block is broken - NOT REPLACED WITH AIR
+    public static void harvestItem(Location loc, ItemStack item, Material block) {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> loc.getWorld().dropItem(loc.add(0.5,0.5,0.5), item), 0); // delay dropping item
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> loc.getBlock().setType(block), 5); // delay dropping item
+    }
+    // Drop (1) Material when a particular block is broken.
+    public static void harvestItem(Location loc, Material A, int amt, Material block) {
+        if (amt != 0) { harvestItem(loc, IS(A, amt), block); }
+    }
+    public static void harvestItem(Location loc, Material A, Material block) {
+        harvestItem(loc, A, 1, block);
+    }
     
     // Quick helper function
     public static boolean typeNSEW(Location loc, Material material) {
@@ -99,32 +122,37 @@ public class Blocks implements Listener {
 
         // Enforce survival mode on players in main plugin class.
         event.setCancelled(true);
-        boolean destroy = false;
         switch (block.getType()) {
             // how do we handle getting sticks
             // LEAVES
             case ACACIA_LEAVES -> {
-                if (typeNSEW(loc, ACACIA_LOG)) dropItem(loc, ACACIA_SAPLING);
-                else dropItem(loc, ACACIA_LEAVES);
+                Leaves leaves = (Leaves) data;
+                if (leaves.getDistance() == 1 && !leaves.isPersistent()) dropItem(loc, ACACIA_SAPLING);
+                else dropItem(loc, ACACIA_SAPLING);
             }
             case BIRCH_LEAVES -> {
-                if (typeNSEW(loc, BIRCH_LOG)) dropItem(loc, BIRCH_SAPLING);
+                Leaves leaves = (Leaves) data;
+                if (leaves.getDistance() == 1 && !leaves.isPersistent()) dropItem(loc, BIRCH_SAPLING);
                 else dropItem(loc, BIRCH_LEAVES);
             }
             case DARK_OAK_LEAVES -> {
-                if (typeNSEW(loc, DARK_OAK_LOG)) dropItem(loc, DARK_OAK_SAPLING);
+                Leaves leaves = (Leaves) data;
+                if (leaves.getDistance() == 1 && !leaves.isPersistent()) dropItem(loc, DARK_OAK_SAPLING);
                 else dropItem(loc, DARK_OAK_LEAVES);
             }
             case JUNGLE_LEAVES -> {
-                if (typeNSEW(loc, JUNGLE_LOG)) dropItem(loc, JUNGLE_SAPLING);
+                Leaves leaves = (Leaves) data;
+                if (leaves.getDistance() == 1 && !leaves.isPersistent()) dropItem(loc, JUNGLE_SAPLING);
                 else dropItem(loc, JUNGLE_LEAVES);
             }
             case OAK_LEAVES -> {
-                if (typeNSEW(loc, OAK_LOG)) dropItem(loc, OAK_SAPLING);
+                Leaves leaves = (Leaves) data;
+                if (leaves.getDistance() == 1 && !leaves.isPersistent()) dropItem(loc, OAK_SAPLING);
                 else dropItem(loc, OAK_LEAVES);
             }
             case SPRUCE_LEAVES -> {
-                if (typeNSEW(loc, SPRUCE_LOG)) dropItem(loc, SPRUCE_SAPLING);
+                Leaves leaves = (Leaves) data;
+                if (leaves.getDistance() == 1 && !leaves.isPersistent()) dropItem(loc, SPRUCE_SAPLING);
                 else dropItem(loc, SPRUCE_LEAVES);
             }
             case AZALEA_LEAVES -> dropItem(loc, AZALEA_LEAVES);
@@ -164,8 +192,113 @@ public class Blocks implements Listener {
                 if (((Ageable) data).getAge() == ((Ageable) data).getMaximumAge()) dropItems(loc, BEETROOT, 1, BEETROOT_SEEDS, 2);
                 else dropItem(loc, BEETROOT_SEEDS);
             }
+            // MINING
+            case COAL_ORE -> {
+                if (MINE_TOOL.contains(tool.getType())) harvestItem(loc, COAL, 4, STONE);
+            }
+            case DEEPSLATE_COAL_ORE -> {
+                if (MINE_TOOL.contains(tool.getType())) harvestItem(loc, COAL, 4, DEEPSLATE);
+            }
+            case COPPER_ORE -> {
+                if (MINE_TOOL.contains(tool.getType())) harvestItem(loc, RAW_COPPER, 4, STONE);
+            }
+            case DEEPSLATE_COPPER_ORE -> {
+                if (MINE_TOOL.contains(tool.getType())) harvestItem(loc, RAW_COPPER, 4, DEEPSLATE);
+            }
+            case LAPIS_ORE -> {
+                if (MINE_TOOL.contains(tool.getType())) harvestItem(loc, LAPIS_LAZULI, 4, STONE);
+            }
+            case DEEPSLATE_LAPIS_ORE -> {
+                if (MINE_TOOL.contains(tool.getType())) harvestItem(loc, LAPIS_LAZULI, 4, DEEPSLATE);
+            }
+            case IRON_ORE -> {
+                if (MINE_TOOL.contains(tool.getType())) harvestItem(loc, RAW_IRON, 4, STONE);
+            }
+            case DEEPSLATE_IRON_ORE -> {
+                if (MINE_TOOL.contains(tool.getType())) harvestItem(loc, RAW_IRON, 4, DEEPSLATE);
+            }
+            case GOLD_ORE -> {
+                if (MINE_TOOL.contains(tool.getType())) harvestItem(loc, RAW_GOLD, 4, STONE);
+            }
+            case DEEPSLATE_GOLD_ORE -> {
+                if (MINE_TOOL.contains(tool.getType())) harvestItem(loc, RAW_GOLD, 4, DEEPSLATE);
+            }
+            case REDSTONE_ORE -> {
+                if (MINE_TOOL.contains(tool.getType())) harvestItem(loc, REDSTONE, 4, STONE);
+            }
+            case DEEPSLATE_REDSTONE_ORE -> {
+                if (MINE_TOOL.contains(tool.getType())) harvestItem(loc, REDSTONE, 4, DEEPSLATE);
+            }
+            case DIAMOND_ORE -> {
+                if (MINE_TOOL.contains(tool.getType())) harvestItem(loc, DIAMOND, 4, STONE);
+            }
+            case DEEPSLATE_DIAMOND_ORE -> {
+                if (MINE_TOOL.contains(tool.getType())) harvestItem(loc, DIAMOND, 4, DEEPSLATE);
+            }
+            case EMERALD_ORE -> {
+                if (MINE_TOOL.contains(tool.getType())) harvestItem(loc, EMERALD, 4, STONE);
+            }
+            case DEEPSLATE_EMERALD_ORE -> {
+                if (MINE_TOOL.contains(tool.getType())) harvestItem(loc, EMERALD, 4, DEEPSLATE);
+            }
         }
 
 
+
+    }
+    // Digging tool list (placeholder)
+    public static final Set<Material> DIG_TOOL = new HashSet<>();
+    static {
+        DIG_TOOL.add(Material.WOODEN_SHOVEL);
+        DIG_TOOL.add(Material.STONE_SHOVEL);
+        DIG_TOOL.add(Material.IRON_SHOVEL);
+        DIG_TOOL.add(Material.GOLDEN_SHOVEL);
+        DIG_TOOL.add(Material.DIAMOND_SHOVEL);
+        DIG_TOOL.add(Material.NETHERITE_SHOVEL);
+    }
+
+    // Chopping tool list (placeholder)
+    public static final Set<Material> CHOP_TOOL = new HashSet<>();
+    static {
+        CHOP_TOOL.add(Material.WOODEN_AXE);
+        CHOP_TOOL.add(Material.STONE_AXE);
+        CHOP_TOOL.add(Material.IRON_AXE);
+        CHOP_TOOL.add(Material.GOLDEN_AXE);
+        CHOP_TOOL.add(Material.DIAMOND_AXE);
+        CHOP_TOOL.add(Material.NETHERITE_AXE);
+    }
+
+    // Mining tool list (placeholder)
+    public static final Set<Material> MINE_TOOL = new HashSet<>();
+    static {
+        MINE_TOOL.add(Material.WOODEN_PICKAXE);
+        MINE_TOOL.add(Material.STONE_PICKAXE);
+        MINE_TOOL.add(Material.IRON_PICKAXE);
+        MINE_TOOL.add(Material.GOLDEN_PICKAXE);
+        MINE_TOOL.add(Material.DIAMOND_PICKAXE);
+        MINE_TOOL.add(Material.NETHERITE_PICKAXE);
+    }
+
+    // Cutting tool list (placeholder)
+    public static final Set<Material> CUT_TOOL = new HashSet<>();
+    static {
+        CUT_TOOL.add(Material.WOODEN_SWORD);
+        CUT_TOOL.add(Material.STONE_SWORD);
+        CUT_TOOL.add(Material.IRON_SWORD);
+        CUT_TOOL.add(Material.GOLDEN_SWORD);
+        CUT_TOOL.add(Material.DIAMOND_SWORD);
+        CUT_TOOL.add(Material.NETHERITE_SWORD);
+        // CUT_TOOL.add(Material.SHEARS);
+    }
+
+    // Clearing tool list (placeholder)
+    public static final Set<Material> CLEAR_TOOL = new HashSet<>();
+    static {
+        CLEAR_TOOL.add(Material.WOODEN_HOE);
+        CLEAR_TOOL.add(Material.STONE_HOE);
+        CLEAR_TOOL.add(Material.IRON_HOE);
+        CLEAR_TOOL.add(Material.GOLDEN_HOE);
+        CLEAR_TOOL.add(Material.DIAMOND_HOE);
+        CLEAR_TOOL.add(Material.NETHERITE_HOE);
     }
 }

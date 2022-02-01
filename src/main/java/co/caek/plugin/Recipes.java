@@ -2,7 +2,6 @@ package co.caek.plugin;
 
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.entity.Item;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.*;
 
@@ -27,13 +26,13 @@ public class Recipes implements Listener {
 
     // Add shaped recipe with (1) ItemStack
     static public void addShaped(String key, ItemStack result, ItemStack A, String top, String mid, String bot) {
-        server.addRecipe(new ShapedRecipe(Recipes.newKey(key), result).setIngredient('A', A).shape(top, mid, bot));
+        server.addRecipe(new ShapedRecipe(Recipes.newKey(key), result).shape(top, mid, bot).setIngredient('A', A));
     }
     static public void addShaped(String key, ItemStack result, ItemStack A, String top, String bot) {
-        server.addRecipe(new ShapedRecipe(Recipes.newKey(key), result).setIngredient('A', A).shape(top, bot));
+        server.addRecipe(new ShapedRecipe(Recipes.newKey(key), result).shape(top, bot).setIngredient('A', A));
     }
     static public void addShaped(String key, ItemStack result, ItemStack A, String row) {
-        server.addRecipe(new ShapedRecipe(Recipes.newKey(key), result).setIngredient('A', A).shape(row));
+        server.addRecipe(new ShapedRecipe(Recipes.newKey(key), result).shape(row).setIngredient('A', A));
     }
     // Add shaped recipe with (1) Material
     static public void addShaped(String key, Material result, int amt, Material A, String top, String mid, String bot) {
@@ -48,15 +47,13 @@ public class Recipes implements Listener {
 
     // Add shaped recipe with (2) ItemStacks
     static public void addShaped(String key, ItemStack result, ItemStack A, ItemStack B, String top, String mid, String bot) {
-        server.addRecipe(new ShapedRecipe(Recipes.newKey(key), result).setIngredient('A', A).setIngredient('B', B)
-                .shape(top, mid, bot));
+        server.addRecipe(new ShapedRecipe(Recipes.newKey(key), result).shape(top, mid, bot).setIngredient('A', A).setIngredient('B', B));
     }
     static public void addShaped(String key, ItemStack result, ItemStack A, ItemStack B, String top, String bot) {
-        server.addRecipe(new ShapedRecipe(Recipes.newKey(key), result).setIngredient('A', A).setIngredient('B', B)
-                .shape(top, bot));
+        server.addRecipe(new ShapedRecipe(Recipes.newKey(key), result).shape(top, bot).setIngredient('A', A).setIngredient('B', B));
     }
     static public void addShaped(String key, ItemStack result, ItemStack A, ItemStack B, String row) {
-        server.addRecipe(new ShapedRecipe(Recipes.newKey(key), result).setIngredient('A', A).setIngredient('B', B).shape(row));
+        server.addRecipe(new ShapedRecipe(Recipes.newKey(key), result).shape(row).setIngredient('A', A).setIngredient('B', B));
     }
     // Add shaped recipe with (2) Materials
     static public void addShaped(String key, Material result, int amt, Material A, Material B, String top, String mid, String bot) {
@@ -71,16 +68,16 @@ public class Recipes implements Listener {
 
     // Add shaped recipe with (3) ItemStacks
     static public void addShaped(String key, ItemStack result, ItemStack A, ItemStack B, ItemStack C, String top, String mid, String bot) {
-        server.addRecipe(new ShapedRecipe(Recipes.newKey(key), result).setIngredient('A', A).setIngredient('B', B)
-                .setIngredient('C', C).shape(top, mid, bot));
+        server.addRecipe(new ShapedRecipe(Recipes.newKey(key), result).shape(top, mid, bot).setIngredient('A', A).setIngredient('B', B)
+                .setIngredient('C', C));
     }
     static public void addShaped(String key, ItemStack result, ItemStack A, ItemStack B, ItemStack C, String top, String bot) {
-        server.addRecipe(new ShapedRecipe(Recipes.newKey(key), result).setIngredient('A', A).setIngredient('B', B)
-                .setIngredient('C', C).shape(top, bot));
+        server.addRecipe(new ShapedRecipe(Recipes.newKey(key), result).shape(top, bot).setIngredient('A', A).setIngredient('B', B)
+                .setIngredient('C', C));
     }
     static public void addShaped(String key, ItemStack result, ItemStack A, ItemStack B, ItemStack C, String row) {
-        server.addRecipe(new ShapedRecipe(Recipes.newKey(key), result).setIngredient('A', A).setIngredient('B', B)
-                .setIngredient('C', C).shape(row));
+        server.addRecipe(new ShapedRecipe(Recipes.newKey(key), result).shape(row).setIngredient('A', A).setIngredient('B', B)
+                .setIngredient('C', C));
     }
     // Add shaped recipe with (3) Materials
     static public void addShaped(String key, Material result, int amt, Material A, Material B, Material C, String top, String mid, String bot) {
@@ -249,6 +246,8 @@ public class Recipes implements Listener {
     }
     
     static public void shapedRecipes() {
+        addShaped("coal_torch", TORCH, 4, COAL, STICK, "A", "B");
+        addShaped("charcoal_torch", TORCH, 4, CHARCOAL, STICK, "A", "B");
     }
 
     static public void addRecipes() {

@@ -62,6 +62,21 @@ public class Character implements Listener {
     }
 
     @EventHandler
+    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+        if (event.getDamager() instanceof Player player) {
+            ItemStack weapon = player.getInventory().getItemInMainHand();
+            // placeholder improvised weapons - consider changing item damage when crafted / description
+            switch (weapon.getType()) {
+                case STICK -> event.setDamage(2);
+                case TORCH -> {
+                    if (lrng8.rand() > 7) event.getEntity().setFireTicks(60);
+                    event.setDamage(0);
+                }
+            }
+        }
+    }
+
+    @EventHandler
     public void onCreatureSpawn(CreatureSpawnEvent event) {
         LivingEntity creature = event.getEntity();
         switch (creature.getType()) {
