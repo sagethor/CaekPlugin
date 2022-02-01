@@ -111,6 +111,14 @@ public class Blocks implements Listener {
                 | loc.subtract(0,0,1).getBlock().getType() == material;
     }
 
+    private static void dropSelf(Block block) { dropItem(block.getLocation(), block.getType()); }
+    private static boolean isMined(ItemStack tool) { return MINE_TOOL.contains(tool.getType()); }
+    private static boolean isDug(ItemStack tool) { return DIG_TOOL.contains(tool.getType()); }
+    // v v v add this section later v v v
+    private static boolean isCut(ItemStack tool) { return CUT_TOOL.contains(tool.getType()); }
+    private static boolean isCleared(ItemStack tool) { return CLEAR_TOOL.contains(tool.getType()); }
+    private static boolean isChopped(ItemStack tool) { return CHOP_TOOL.contains(tool.getType()); }
+
     @EventHandler
     // CALLED WHEN BLOCK BROKEN BY PLAYER.
     public void onBlockBreak(BlockBreakEvent event) {
@@ -122,67 +130,49 @@ public class Blocks implements Listener {
 
         // Enforce survival mode on players in main plugin class.
         event.setCancelled(true);
+        // Try to keep all cases as one-liners or combined
         switch (block.getType()) {
             // how do we handle getting sticks
             // LEAVES
             case ACACIA_LEAVES -> {
                 Leaves leaves = (Leaves) data;
                 if (leaves.getDistance() == 1 && !leaves.isPersistent()) dropItem(loc, ACACIA_SAPLING);
-                else dropItem(loc, ACACIA_SAPLING);
+                else dropSelf(block);
             }
             case BIRCH_LEAVES -> {
                 Leaves leaves = (Leaves) data;
                 if (leaves.getDistance() == 1 && !leaves.isPersistent()) dropItem(loc, BIRCH_SAPLING);
-                else dropItem(loc, BIRCH_LEAVES);
+                else dropSelf(block);
             }
             case DARK_OAK_LEAVES -> {
                 Leaves leaves = (Leaves) data;
                 if (leaves.getDistance() == 1 && !leaves.isPersistent()) dropItem(loc, DARK_OAK_SAPLING);
-                else dropItem(loc, DARK_OAK_LEAVES);
+                else dropSelf(block);
             }
             case JUNGLE_LEAVES -> {
                 Leaves leaves = (Leaves) data;
                 if (leaves.getDistance() == 1 && !leaves.isPersistent()) dropItem(loc, JUNGLE_SAPLING);
-                else dropItem(loc, JUNGLE_LEAVES);
+                else dropSelf(block);
             }
             case OAK_LEAVES -> {
                 Leaves leaves = (Leaves) data;
                 if (leaves.getDistance() == 1 && !leaves.isPersistent()) dropItem(loc, OAK_SAPLING);
-                else dropItem(loc, OAK_LEAVES);
+                else dropSelf(block);
             }
             case SPRUCE_LEAVES -> {
                 Leaves leaves = (Leaves) data;
                 if (leaves.getDistance() == 1 && !leaves.isPersistent()) dropItem(loc, SPRUCE_SAPLING);
-                else dropItem(loc, SPRUCE_LEAVES);
+                else dropSelf(block);
             }
-            case AZALEA_LEAVES -> dropItem(loc, AZALEA_LEAVES);
+            case AZALEA_LEAVES -> dropSelf(block);
             // FLORA
-            case GRASS -> dropItem(loc, GRASS);
-            case FERN -> dropItem(loc, FERN);
-            case TALL_GRASS -> dropItem(loc, TALL_GRASS);
-            case LARGE_FERN -> dropItem(loc, LARGE_FERN);
-            case DEAD_BUSH -> dropItem(loc, DEAD_BUSH);
-            case SEAGRASS -> dropItem(loc, SEAGRASS);
-            case TALL_SEAGRASS -> dropItem(loc, TALL_SEAGRASS);
+            case GRASS, FERN, TALL_GRASS, LARGE_FERN, DEAD_BUSH, SEAGRASS, TALL_SEAGRASS, BAMBOO, SUGAR_CANE
+                    -> dropSelf(block);
 
             // FLOWERS
-            case DANDELION -> dropItem(loc, DANDELION);
-            case POPPY -> dropItem(loc, POPPY);
-            case BLUE_ORCHID -> dropItem(loc, BLUE_ORCHID);
-            case ALLIUM -> dropItem(loc, ALLIUM);
-            case AZURE_BLUET -> dropItem(loc, AZURE_BLUET);
-            case ORANGE_TULIP -> dropItem(loc, ORANGE_TULIP);
-            case PINK_TULIP -> dropItem(loc, PINK_TULIP);
-            case RED_TULIP -> dropItem(loc, RED_TULIP);
-            case WHITE_TULIP -> dropItem(loc, WHITE_TULIP);
-            case OXEYE_DAISY -> dropItem(loc, OXEYE_DAISY);
-            case CORNFLOWER -> dropItem(loc, CORNFLOWER);
-            case LILY_OF_THE_VALLEY -> dropItem(loc, LILY_OF_THE_VALLEY);
-            case WITHER_ROSE -> dropItem(loc, WITHER_ROSE);
-            case SUNFLOWER -> dropItem(loc, SUNFLOWER);
-            case LILAC -> dropItem(loc, LILAC);
-            case ROSE_BUSH -> dropItem(loc, ROSE_BUSH);
-            case PEONY -> dropItem(loc, PEONY);
+            case DANDELION, POPPY, BLUE_ORCHID, ALLIUM, AZURE_BLUET, ORANGE_TULIP, PINK_TULIP, RED_TULIP, WHITE_TULIP,
+                    OXEYE_DAISY, CORNFLOWER, LILY_OF_THE_VALLEY, WITHER_ROSE, SUNFLOWER, LILAC, ROSE_BUSH, PEONY ->
+                    dropItem(loc, DANDELION);
             // FARMING
             case WHEAT -> {
                 if (((Ageable) data).getAge() == ((Ageable) data).getMaximumAge()) dropItems(loc, WHEAT, 1, WHEAT_SEEDS, 2);
@@ -193,59 +183,78 @@ public class Blocks implements Listener {
                 else dropItem(loc, BEETROOT_SEEDS);
             }
             // MINING
-            case COAL_ORE -> {
-                if (MINE_TOOL.contains(tool.getType())) harvestItem(loc, COAL, 4, STONE);
-            }
-            case DEEPSLATE_COAL_ORE -> {
-                if (MINE_TOOL.contains(tool.getType())) harvestItem(loc, COAL, 4, DEEPSLATE);
-            }
-            case COPPER_ORE -> {
-                if (MINE_TOOL.contains(tool.getType())) harvestItem(loc, RAW_COPPER, 4, STONE);
-            }
-            case DEEPSLATE_COPPER_ORE -> {
-                if (MINE_TOOL.contains(tool.getType())) harvestItem(loc, RAW_COPPER, 4, DEEPSLATE);
-            }
-            case LAPIS_ORE -> {
-                if (MINE_TOOL.contains(tool.getType())) harvestItem(loc, LAPIS_LAZULI, 4, STONE);
-            }
-            case DEEPSLATE_LAPIS_ORE -> {
-                if (MINE_TOOL.contains(tool.getType())) harvestItem(loc, LAPIS_LAZULI, 4, DEEPSLATE);
-            }
-            case IRON_ORE -> {
-                if (MINE_TOOL.contains(tool.getType())) harvestItem(loc, RAW_IRON, 4, STONE);
-            }
-            case DEEPSLATE_IRON_ORE -> {
-                if (MINE_TOOL.contains(tool.getType())) harvestItem(loc, RAW_IRON, 4, DEEPSLATE);
-            }
-            case GOLD_ORE -> {
-                if (MINE_TOOL.contains(tool.getType())) harvestItem(loc, RAW_GOLD, 4, STONE);
-            }
-            case DEEPSLATE_GOLD_ORE -> {
-                if (MINE_TOOL.contains(tool.getType())) harvestItem(loc, RAW_GOLD, 4, DEEPSLATE);
-            }
-            case REDSTONE_ORE -> {
-                if (MINE_TOOL.contains(tool.getType())) harvestItem(loc, REDSTONE, 4, STONE);
-            }
-            case DEEPSLATE_REDSTONE_ORE -> {
-                if (MINE_TOOL.contains(tool.getType())) harvestItem(loc, REDSTONE, 4, DEEPSLATE);
-            }
-            case DIAMOND_ORE -> {
-                if (MINE_TOOL.contains(tool.getType())) harvestItem(loc, DIAMOND, 4, STONE);
-            }
-            case DEEPSLATE_DIAMOND_ORE -> {
-                if (MINE_TOOL.contains(tool.getType())) harvestItem(loc, DIAMOND, 4, DEEPSLATE);
-            }
-            case EMERALD_ORE -> {
-                if (MINE_TOOL.contains(tool.getType())) harvestItem(loc, EMERALD, 4, STONE);
-            }
-            case DEEPSLATE_EMERALD_ORE -> {
-                if (MINE_TOOL.contains(tool.getType())) harvestItem(loc, EMERALD, 4, DEEPSLATE);
-            }
+            case BASALT, BLACKSTONE, DEEPSLATE, END_STONE, NETHERRACK, SANDSTONE, TERRACOTTA, COBBLESTONE,
+                    MOSSY_COBBLESTONE -> { if (isMined(tool)) dropSelf(block); }
+            // consider right click to quarry a block
+            case STONE -> { if (isMined(tool)) dropItem(loc, COBBLESTONE); }
+
+            case COAL_ORE -> { if (isMined(tool)) harvestItem(loc, COAL, 4, STONE); }
+            case DEEPSLATE_COAL_ORE -> { if (isMined(tool)) harvestItem(loc, COAL, 4, DEEPSLATE); }
+
+            case COPPER_ORE -> { if (isMined(tool)) harvestItem(loc, RAW_COPPER, 4, STONE); }
+            case DEEPSLATE_COPPER_ORE -> { if (isMined(tool)) harvestItem(loc, RAW_COPPER, 4, DEEPSLATE); }
+
+            case LAPIS_ORE -> { if (isMined(tool)) harvestItem(loc, LAPIS_LAZULI, 4, STONE); }
+            case DEEPSLATE_LAPIS_ORE -> { if (isMined(tool)) harvestItem(loc, LAPIS_LAZULI, 4, DEEPSLATE); }
+
+            case IRON_ORE -> { if (isMined(tool)) harvestItem(loc, RAW_IRON, 4, STONE); }
+            case DEEPSLATE_IRON_ORE -> { if (isMined(tool)) harvestItem(loc, RAW_IRON, 4, DEEPSLATE); }
+
+            case GOLD_ORE -> { if (isMined(tool)) harvestItem(loc, RAW_GOLD, 4, STONE); }
+            case DEEPSLATE_GOLD_ORE -> { if (isMined(tool)) harvestItem(loc, RAW_GOLD, 4, DEEPSLATE); }
+
+            case REDSTONE_ORE -> { if (isMined(tool)) harvestItem(loc, REDSTONE, 4, STONE); }
+            case DEEPSLATE_REDSTONE_ORE -> { if (isMined(tool)) harvestItem(loc, REDSTONE, 4, DEEPSLATE); }
+
+            case DIAMOND_ORE -> { if (isMined(tool)) harvestItem(loc, DIAMOND, 4, STONE); }
+            case DEEPSLATE_DIAMOND_ORE -> { if (isMined(tool)) harvestItem(loc, DIAMOND, 4, DEEPSLATE); }
+
+            case EMERALD_ORE -> { if (isMined(tool)) harvestItem(loc, EMERALD, 4, STONE); }
+            case DEEPSLATE_EMERALD_ORE -> { if (isMined(tool)) harvestItem(loc, EMERALD, 4, DEEPSLATE); }
+
+            case ANDESITE_STAIRS, BLACKSTONE_STAIRS, BRICK_STAIRS, COBBLED_DEEPSLATE_STAIRS, COBBLESTONE_STAIRS,
+                    CUT_COPPER_STAIRS, DARK_PRISMARINE_STAIRS, DEEPSLATE_BRICK_STAIRS, DEEPSLATE_TILE_STAIRS,
+                    DIORITE_STAIRS, END_STONE_BRICK_STAIRS, MOSSY_STONE_BRICK_STAIRS, GRANITE_STAIRS, STONE_STAIRS,
+                    NETHER_BRICK_STAIRS, EXPOSED_CUT_COPPER_STAIRS, OXIDIZED_CUT_COPPER_STAIRS, PRISMARINE_STAIRS,
+                    MOSSY_COBBLESTONE_STAIRS, POLISHED_ANDESITE_STAIRS, POLISHED_BLACKSTONE_BRICK_STAIRS, PURPUR_STAIRS,
+                    POLISHED_BLACKSTONE_STAIRS, POLISHED_DEEPSLATE_STAIRS, POLISHED_DIORITE_STAIRS, STONE_BRICK_STAIRS,
+                    POLISHED_GRANITE_STAIRS, QUARTZ_STAIRS, SMOOTH_QUARTZ_STAIRS, PRISMARINE_BRICK_STAIRS,
+                    SANDSTONE_STAIRS, RED_SANDSTONE_STAIRS, SMOOTH_RED_SANDSTONE_STAIRS, SMOOTH_SANDSTONE_STAIRS,
+                    RED_NETHER_BRICK_STAIRS, WAXED_CUT_COPPER_STAIRS, WAXED_EXPOSED_CUT_COPPER_STAIRS,
+                    WAXED_OXIDIZED_CUT_COPPER_STAIRS, WAXED_WEATHERED_CUT_COPPER_STAIRS, WEATHERED_CUT_COPPER_STAIRS ->
+                    { if (isMined(tool)) dropSelf(block); }
+
+            // DIGGING
+            // re-evaluate GRASS & MYCELIUM
+            case DIRT, GRASS_BLOCK, MYCELIUM, SAND, GRAVEL -> { if (isDug(tool)) dropItem(loc, block.getType()); }
+            case SNOW -> {}
+            case CLAY -> {}
+
+            // CHOPPING
+            case ACACIA_LOG, BIRCH_LOG, CRIMSON_STEM, DARK_OAK_LOG, JUNGLE_LOG, OAK_LOG, SPRUCE_LOG, WARPED_STEM ->
+                    { if (isChopped(tool)) dropSelf(block); }
+            case ACACIA_PLANKS, BIRCH_PLANKS, CRIMSON_PLANKS, DARK_OAK_PLANKS, JUNGLE_PLANKS, OAK_PLANKS, SPRUCE_PLANKS,
+                    WARPED_PLANKS -> { if (isChopped(tool)) dropSelf(block); }
+            case STRIPPED_ACACIA_LOG, STRIPPED_BIRCH_LOG, STRIPPED_CRIMSON_STEM, STRIPPED_DARK_OAK_LOG,
+                    STRIPPED_JUNGLE_LOG, STRIPPED_OAK_LOG, STRIPPED_SPRUCE_LOG, STRIPPED_WARPED_STEM ->
+                    { if (isChopped(tool)) dropSelf(block); }
+            case STRIPPED_ACACIA_WOOD, STRIPPED_BIRCH_WOOD, STRIPPED_CRIMSON_HYPHAE, STRIPPED_DARK_OAK_WOOD,
+                    STRIPPED_JUNGLE_WOOD, STRIPPED_OAK_WOOD, STRIPPED_SPRUCE_WOOD, STRIPPED_WARPED_HYPHAE ->
+                    { if (isChopped(tool)) dropSelf(block); }
+            case ACACIA_STAIRS, BIRCH_STAIRS, CRIMSON_STAIRS, DARK_OAK_STAIRS, JUNGLE_STAIRS, SPRUCE_STAIRS,
+                    WARPED_STAIRS, OAK_STAIRS -> { if (isCut(tool)) dropSelf(block); }
+            case ACACIA_SLAB, BIRCH_SLAB, CRIMSON_SLAB, DARK_OAK_SLAB, JUNGLE_SLAB, SPRUCE_SLAB, WARPED_SLAB, OAK_SLAB
+                    -> { if (isChopped(tool)) dropSelf(block); }
         }
 
 
 
     }
+    // Handaxe should be in all lists while being the worst tool.
+    // Flint can be made into handaxes which break 1/16 times.
+
+    // VERIFY TOOLS LOSE DURABILITY?
+
     // Digging tool list (placeholder)
     public static final Set<Material> DIG_TOOL = new HashSet<>();
     static {
