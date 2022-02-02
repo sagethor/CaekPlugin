@@ -1,5 +1,6 @@
 package co.caek.plugin;
 
+import io.papermc.paper.event.block.BlockBreakBlockEvent;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Ageable;
@@ -31,7 +32,7 @@ public class Blocks implements Listener {
     public static void dropItem(Location loc, ItemStack item) {
         if (item.getType() == AIR) return; // CANNOT DROP AIR ERROR
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-            loc.getWorld().dropItemNaturally(loc.add(0.5,0.5,0.5), item);
+            loc.getWorld().dropItemNaturally(loc.add(.5,.5,.5), item);
             loc.getBlock().setType(AIR);
         }, 0); // delay dropping item
     }
@@ -46,8 +47,8 @@ public class Blocks implements Listener {
     public static void dropItems(Location loc, ItemStack A, ItemStack B) {
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-            loc.getWorld().dropItemNaturally(loc.add(0.5,0.5,0.5), A);
-            loc.getWorld().dropItemNaturally(loc.add(0.5,0.5,0.5), B);
+            loc.getWorld().dropItemNaturally(loc.add(.5,.5,.5), A);
+            loc.getWorld().dropItemNaturally(loc.add(.5,.5,.5), B);
             loc.getBlock().setType(AIR);
         }, 0);
 
@@ -55,8 +56,8 @@ public class Blocks implements Listener {
     // Drop (2) Materials when a particular block is broken.
     public static void dropItems(Location loc, Material A, int amtA, Material B, int amtB) {
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-            loc.getWorld().dropItemNaturally(loc.add(0.5,0.5,0.5), IS(A, amtA));
-            loc.getWorld().dropItemNaturally(loc.add(0.5,0.5,0.5), IS(B, amtB));
+            loc.getWorld().dropItemNaturally(loc.add(.5,.5,.5), IS(A, amtA));
+            loc.getWorld().dropItemNaturally(loc.add(.5,.5,.5), IS(B, amtB));
             loc.getBlock().setType(AIR);
         }, 0);
     }
@@ -67,8 +68,8 @@ public class Blocks implements Listener {
     public static void dropItems(Location loc, ItemStack A, ItemStack B, ItemStack C) {
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-            loc.getWorld().dropItemNaturally(loc.add(0.5,0.5,0.5), A);
-            loc.getWorld().dropItemNaturally(loc.add(0.5,0.5,0.5), B);
+            loc.getWorld().dropItemNaturally(loc.add(.5,.5,.5), A);
+            loc.getWorld().dropItemNaturally(loc.add(.5,.5,.5), B);
             loc.getWorld().dropItemNaturally(loc.add(.5,.5,.5), C);
             loc.getBlock().setType(AIR);
         }, 0);
@@ -76,8 +77,8 @@ public class Blocks implements Listener {
     // Drop (3) Materials when a particular block is broken.
     public static void dropItems(Location loc, Material A, int amtA, Material B, int amtB, Material C, int amtC) {
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
-            loc.getWorld().dropItemNaturally(loc.add(0.5,0.5,0.5), IS(A, amtA));
-            loc.getWorld().dropItemNaturally(loc.add(0.5,0.5,0.5), IS(B, amtB));
+            loc.getWorld().dropItemNaturally(loc.add(.5,.5,.5), IS(A, amtA));
+            loc.getWorld().dropItemNaturally(loc.add(.5,.5,.5), IS(B, amtB));
             loc.getWorld().dropItemNaturally(loc.add(.5,.5,.5), IS(C, amtC));
             loc.getBlock().setType(AIR);
         }, 0);
@@ -91,6 +92,7 @@ public class Blocks implements Listener {
     // IMPLEMENTED QUICKLY FOR MINING
     // Drop (1) ItemStack when a particular block is broken - NOT REPLACED WITH AIR
     public static void harvestItem(Location loc, ItemStack item, Material block) {
+        // check if we can put this in the same scheduled task now that it works...
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> loc.getWorld().dropItem(loc.add(0.5,0.5,0.5), item), 0); // delay dropping item
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> loc.getBlock().setType(block), 5); // delay dropping item
     }
@@ -115,10 +117,12 @@ public class Blocks implements Listener {
     private static void dropSelf(Block block) { dropItem(block.getLocation(), block.getType()); }
     private static boolean isMined(ItemStack tool) { return MINE_TOOL.contains(tool.getType()); }
     private static boolean isDug(ItemStack tool) { return DIG_TOOL.contains(tool.getType()); }
-    // v v v add this section later v v v
     private static boolean isCut(ItemStack tool) { return CUT_TOOL.contains(tool.getType()); }
     private static boolean isCleared(ItemStack tool) { return CLEAR_TOOL.contains(tool.getType()); }
     private static boolean isChopped(ItemStack tool) { return CHOP_TOOL.contains(tool.getType()); }
+
+    @EventHandler
+    public void onBlockBreakBlockEvent(BlockBreakBlockEvent event) {}
 
     @EventHandler
     // CALLED WHEN BLOCK BROKEN BY PLAYER.
@@ -128,8 +132,6 @@ public class Blocks implements Listener {
         Location loc = block.getLocation();
         Player player = event.getPlayer();
         ItemStack tool = player.getEquipment().getItemInMainHand();
-
-        // Enforce survival mode on players in main plugin class.
         event.setCancelled(true);
         // Try to keep all cases as one-liners or combined
         switch (block.getType()) {
@@ -169,7 +171,6 @@ public class Blocks implements Listener {
             // FLORA
             case GRASS, FERN, TALL_GRASS, LARGE_FERN, DEAD_BUSH, SEAGRASS, TALL_SEAGRASS, BAMBOO, SUGAR_CANE
                     -> dropSelf(block);
-
             // FLOWERS
             case DANDELION, POPPY, BLUE_ORCHID, ALLIUM, AZURE_BLUET, ORANGE_TULIP, PINK_TULIP, RED_TULIP, WHITE_TULIP,
                     OXEYE_DAISY, CORNFLOWER, LILY_OF_THE_VALLEY, WITHER_ROSE, SUNFLOWER, LILAC, ROSE_BUSH, PEONY ->
@@ -213,6 +214,7 @@ public class Blocks implements Listener {
             case EMERALD_ORE -> { if (isMined(tool)) harvestItem(loc, EMERALD, 4, STONE); }
             case DEEPSLATE_EMERALD_ORE -> { if (isMined(tool)) harvestItem(loc, EMERALD, 4, DEEPSLATE); }
 
+            /*
             case ANDESITE_STAIRS, BLACKSTONE_STAIRS, BRICK_STAIRS, COBBLED_DEEPSLATE_STAIRS, COBBLESTONE_STAIRS,
                     CUT_COPPER_STAIRS, DARK_PRISMARINE_STAIRS, DEEPSLATE_BRICK_STAIRS, DEEPSLATE_TILE_STAIRS,
                     DIORITE_STAIRS, END_STONE_BRICK_STAIRS, MOSSY_STONE_BRICK_STAIRS, GRANITE_STAIRS, STONE_STAIRS,
@@ -224,12 +226,17 @@ public class Blocks implements Listener {
                     RED_NETHER_BRICK_STAIRS, WAXED_CUT_COPPER_STAIRS, WAXED_EXPOSED_CUT_COPPER_STAIRS,
                     WAXED_OXIDIZED_CUT_COPPER_STAIRS, WAXED_WEATHERED_CUT_COPPER_STAIRS, WEATHERED_CUT_COPPER_STAIRS ->
                     { if (isMined(tool)) dropSelf(block); }
+             */
 
             // DIGGING
             // re-evaluate GRASS & MYCELIUM
-            case DIRT, GRASS_BLOCK, MYCELIUM, SAND, GRAVEL -> { if (isDug(tool)) dropItem(loc, block.getType()); }
+            case DIRT, GRASS_BLOCK, MYCELIUM, SAND -> { if (isDug(tool)) dropSelf(block); }
             case SNOW -> {}
             case CLAY -> {}
+            case GRAVEL -> {
+                if (isDug(tool)) dropSelf(block);
+                else if (tool.getType() == AIR) harvestItem(loc, FLINT, 1, GRAVEL);
+            }
 
             // CHOPPING
             case ACACIA_LOG, BIRCH_LOG, CRIMSON_STEM, DARK_OAK_LOG, JUNGLE_LOG, OAK_LOG, SPRUCE_LOG, WARPED_STEM ->
@@ -251,8 +258,6 @@ public class Blocks implements Listener {
 
 
     }
-    // Handaxe should be in all lists while being the worst tool.
-    // Flint can be made into handaxes which break 1/16 times.
 
     // VERIFY TOOLS LOSE DURABILITY?
     
@@ -267,15 +272,15 @@ public class Blocks implements Listener {
     public static final Set<Material> CUT_TOOL = new HashSet<>();
     public static final Set<Material> CLEAR_TOOL = new HashSet<>();
     static {
-        makeMaterialList(DIG_TOOL, WOODEN_SHOVEL, STONE_SHOVEL, IRON_SHOVEL,
+        makeMaterialList(DIG_TOOL, FLINT, WOODEN_SHOVEL, STONE_SHOVEL, IRON_SHOVEL,
                 GOLDEN_SHOVEL, DIAMOND_SHOVEL, NETHERITE_SHOVEL);
-        makeMaterialList(CHOP_TOOL, WOODEN_AXE, STONE_AXE, IRON_AXE,
+        makeMaterialList(CHOP_TOOL, FLINT, WOODEN_AXE, STONE_AXE, IRON_AXE,
                 GOLDEN_AXE, DIAMOND_AXE, NETHERITE_AXE);
-        makeMaterialList(MINE_TOOL, WOODEN_PICKAXE, STONE_PICKAXE, IRON_PICKAXE,
+        makeMaterialList(MINE_TOOL, FLINT, WOODEN_PICKAXE, STONE_PICKAXE, IRON_PICKAXE,
                 GOLDEN_PICKAXE, DIAMOND_PICKAXE, NETHERITE_PICKAXE);
-        makeMaterialList(CUT_TOOL, WOODEN_SWORD, STONE_SWORD, IRON_SWORD,
+        makeMaterialList(CUT_TOOL, FLINT, WOODEN_SWORD, STONE_SWORD, IRON_SWORD,
                 GOLDEN_SWORD, DIAMOND_SWORD, NETHERITE_SWORD);
-        makeMaterialList(CLEAR_TOOL, WOODEN_HOE, STONE_HOE, IRON_HOE,
+        makeMaterialList(CLEAR_TOOL, FLINT, WOODEN_HOE, STONE_HOE, IRON_HOE,
                 GOLDEN_HOE, DIAMOND_HOE, NETHERITE_HOE);
     }
 }
