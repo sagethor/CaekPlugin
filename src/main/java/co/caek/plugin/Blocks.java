@@ -92,9 +92,10 @@ public class Blocks implements Listener {
     // IMPLEMENTED QUICKLY FOR MINING
     // Drop (1) ItemStack when a particular block is broken - NOT REPLACED WITH AIR
     public static void harvestItem(Location loc, ItemStack item, Material block) {
-        // check if we can put this in the same scheduled task now that it works...
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> loc.getWorld().dropItem(loc.add(0.5,0.5,0.5), item), 0); // delay dropping item
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> loc.getBlock().setType(block), 5); // delay dropping item
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+            loc.getWorld().dropItem(loc.add(0.5,0.5,0.5), item);
+            loc.getBlock().setType(block);
+        }, 0); // delay dropping item
     }
     // Drop (1) Material when a particular block is broken.
     public static void harvestItem(Location loc, Material A, int amt, Material block) {
@@ -213,6 +214,7 @@ public class Blocks implements Listener {
             }
 
             // CHOPPING
+            // Regular Logs
             case ACACIA_LOG, BIRCH_LOG, CRIMSON_STEM, DARK_OAK_LOG, JUNGLE_LOG, OAK_LOG, SPRUCE_LOG, WARPED_STEM ->
                     { if (isChopped(tool)) dropSelf(block); }
             case ACACIA_PLANKS, BIRCH_PLANKS, CRIMSON_PLANKS, DARK_OAK_PLANKS, JUNGLE_PLANKS, OAK_PLANKS, SPRUCE_PLANKS,
