@@ -128,19 +128,20 @@ public class Blocks implements Listener {
     // CALLED WHEN BLOCK BROKEN BY PLAYER.
     public void onBlockBreak(BlockBreakEvent event) {
         Block block = event.getBlock();
+        Material material = block.getType();
         BlockData data = block.getBlockData();
         Location loc = block.getLocation();
         Player player = event.getPlayer();
         ItemStack tool = player.getEquipment().getItemInMainHand();
         event.setCancelled(true);
         // Try to keep all cases as one-liners or combined
-        switch (block.getType()) {
+        switch (material) {
             // how do we handle getting sticks
             // LEAVES
             case ACACIA_LEAVES, BIRCH_LEAVES, DARK_OAK_LEAVES, JUNGLE_LEAVES, OAK_LEAVES, SPRUCE_LEAVES -> {
                 Leaves leaves = (Leaves) data;
                 if (leaves.getDistance() == 1 && !leaves.isPersistent()) {
-                    dropItem(loc, Material.valueOf(block.getType().name().split("_")[0] + "_SAPLING"));
+                    dropItem(loc, Material.valueOf(material.name().split("_")[0] + "_SAPLING"));
                 } else {
                     dropSelf(block);
                 }
@@ -163,34 +164,29 @@ public class Blocks implements Listener {
                 else dropItem(loc, BEETROOT_SEEDS);
             }
             // MINING
+            // Base blocks - to be refactored
             case BASALT, BLACKSTONE, DEEPSLATE, END_STONE, NETHERRACK, SANDSTONE, TERRACOTTA, COBBLESTONE,
                     MOSSY_COBBLESTONE -> { if (isMined(tool)) dropSelf(block); }
             // consider right click to quarry a block
             case STONE -> { if (isMined(tool)) dropItem(loc, COBBLESTONE); }
 
-            case COAL_ORE -> { if (isMined(tool)) harvestItem(loc, COAL, 4, STONE); }
-            case DEEPSLATE_COAL_ORE -> { if (isMined(tool)) harvestItem(loc, COAL, 4, DEEPSLATE); }
-
-            case COPPER_ORE -> { if (isMined(tool)) harvestItem(loc, RAW_COPPER, 4, STONE); }
-            case DEEPSLATE_COPPER_ORE -> { if (isMined(tool)) harvestItem(loc, RAW_COPPER, 4, DEEPSLATE); }
-
+            // Stone Ores
             case LAPIS_ORE -> { if (isMined(tool)) harvestItem(loc, LAPIS_LAZULI, 4, STONE); }
+            case COAL_ORE, REDSTONE_ORE, DIAMOND_ORE, EMERALD_ORE -> {
+                if (isMined(tool)) harvestItem(loc, Material.valueOf(material.name().split("_")[0]), 4, STONE);
+            }
+            case COPPER_ORE, IRON_ORE, GOLD_ORE -> {
+                if (isMined(tool)) harvestItem(loc, Material.valueOf("RAW_" + material.name().split("_")[0]), 4, STONE);
+            }
+
+            // Deepslate Ores
             case DEEPSLATE_LAPIS_ORE -> { if (isMined(tool)) harvestItem(loc, LAPIS_LAZULI, 4, DEEPSLATE); }
-
-            case IRON_ORE -> { if (isMined(tool)) harvestItem(loc, RAW_IRON, 4, STONE); }
-            case DEEPSLATE_IRON_ORE -> { if (isMined(tool)) harvestItem(loc, RAW_IRON, 4, DEEPSLATE); }
-
-            case GOLD_ORE -> { if (isMined(tool)) harvestItem(loc, RAW_GOLD, 4, STONE); }
-            case DEEPSLATE_GOLD_ORE -> { if (isMined(tool)) harvestItem(loc, RAW_GOLD, 4, DEEPSLATE); }
-
-            case REDSTONE_ORE -> { if (isMined(tool)) harvestItem(loc, REDSTONE, 4, STONE); }
-            case DEEPSLATE_REDSTONE_ORE -> { if (isMined(tool)) harvestItem(loc, REDSTONE, 4, DEEPSLATE); }
-
-            case DIAMOND_ORE -> { if (isMined(tool)) harvestItem(loc, DIAMOND, 4, STONE); }
-            case DEEPSLATE_DIAMOND_ORE -> { if (isMined(tool)) harvestItem(loc, DIAMOND, 4, DEEPSLATE); }
-
-            case EMERALD_ORE -> { if (isMined(tool)) harvestItem(loc, EMERALD, 4, STONE); }
-            case DEEPSLATE_EMERALD_ORE -> { if (isMined(tool)) harvestItem(loc, EMERALD, 4, DEEPSLATE); }
+            case DEEPSLATE_COAL_ORE, DEEPSLATE_REDSTONE_ORE, DEEPSLATE_DIAMOND_ORE, DEEPSLATE_EMERALD_ORE -> {
+                if (isMined(tool)) harvestItem(loc, Material.valueOf(material.name().split("_")[1]), 4, DEEPSLATE);
+            }
+            case DEEPSLATE_COPPER_ORE, DEEPSLATE_IRON_ORE, DEEPSLATE_GOLD_ORE -> {
+                if (isMined(tool)) harvestItem(loc, Material.valueOf("RAW_" + material.name().split("_")[1]), 4, DEEPSLATE);
+            }
 
             /*
             case ANDESITE_STAIRS, BLACKSTONE_STAIRS, BRICK_STAIRS, COBBLED_DEEPSLATE_STAIRS, COBBLESTONE_STAIRS,
