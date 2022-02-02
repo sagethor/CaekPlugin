@@ -137,35 +137,13 @@ public class Blocks implements Listener {
         switch (block.getType()) {
             // how do we handle getting sticks
             // LEAVES
-            case ACACIA_LEAVES -> {
+            case ACACIA_LEAVES, BIRCH_LEAVES, DARK_OAK_LEAVES, JUNGLE_LEAVES, OAK_LEAVES, SPRUCE_LEAVES -> {
                 Leaves leaves = (Leaves) data;
-                if (leaves.getDistance() == 1 && !leaves.isPersistent()) dropItem(loc, ACACIA_SAPLING);
-                else dropSelf(block);
-            }
-            case BIRCH_LEAVES -> {
-                Leaves leaves = (Leaves) data;
-                if (leaves.getDistance() == 1 && !leaves.isPersistent()) dropItem(loc, BIRCH_SAPLING);
-                else dropSelf(block);
-            }
-            case DARK_OAK_LEAVES -> {
-                Leaves leaves = (Leaves) data;
-                if (leaves.getDistance() == 1 && !leaves.isPersistent()) dropItem(loc, DARK_OAK_SAPLING);
-                else dropSelf(block);
-            }
-            case JUNGLE_LEAVES -> {
-                Leaves leaves = (Leaves) data;
-                if (leaves.getDistance() == 1 && !leaves.isPersistent()) dropItem(loc, JUNGLE_SAPLING);
-                else dropSelf(block);
-            }
-            case OAK_LEAVES -> {
-                Leaves leaves = (Leaves) data;
-                if (leaves.getDistance() == 1 && !leaves.isPersistent()) dropItem(loc, OAK_SAPLING);
-                else dropSelf(block);
-            }
-            case SPRUCE_LEAVES -> {
-                Leaves leaves = (Leaves) data;
-                if (leaves.getDistance() == 1 && !leaves.isPersistent()) dropItem(loc, SPRUCE_SAPLING);
-                else dropSelf(block);
+                if (leaves.getDistance() == 1 && !leaves.isPersistent()) {
+                    dropItem(loc, Material.valueOf(block.getType().name().split("_")[0] + "_SAPLING"));
+                } else {
+                    dropSelf(block);
+                }
             }
             case AZALEA_LEAVES -> dropSelf(block);
             // FLORA
