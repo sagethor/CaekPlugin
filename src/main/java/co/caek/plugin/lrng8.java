@@ -23,4 +23,8 @@ public class lrng8 {
             return result;
         }
     }
+
+    public static boolean XinSixten(int X) {
+        return rand() > (15 - X); // 1 -> 1/16, ..., 15 -> 1/15
+    }
 }

@@ -4,6 +4,7 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.*;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import static co.caek.plugin.CaekPlugin.plugin;
 import static co.caek.plugin.CaekPlugin.server;
@@ -216,11 +217,28 @@ public class Recipes implements Listener {
     // Okay, I should probably rewrite again...
     static public RecipeChoice.MaterialChoice RCMC(Material ... material) { return new RecipeChoice.MaterialChoice(material); }
 
+    // Generate ItemStack of Material with custom name
+    static public ItemStack customStack(Material material, String name, int amt) {
+        ItemStack custom = new ItemStack(material, amt);
+        ItemMeta customMeta = custom.getItemMeta();
+        // custom.setCustomModelData(display_resource_number);
+        // can't be assed to figure out displayName() which is from net.kyori.adventure.text.Component
+        customMeta.setDisplayName(name);
+        custom.setItemMeta(customMeta);
+        return custom;
+    }
+
+    // Generate an entry for custom item required for craft.
+    static private RecipeChoice.ExactChoice customChoice(Material material, String name) {
+        return new RecipeChoice.ExactChoice(customStack(material, name, 1));
+    }
+
     static public void campfireRecipes() { // GOAL - 64 RECIPES
         // other misc recipes
         addCampfire("campfire_torch", TORCH, STICK);
         addCampfire("campfire_bonemeal", BONE_MEAL, BONE);
         addCampfire("campfire_brick", BRICK, 1, CLAY_BALL);
+        addCampfire("campfire_tempered_flint", customStack(FLINT, "Tempered Flint", 1), FLINT);
 
         // several dyes are missing - mixing recipes
         addCampfire("campfire_white_dye", WHITE_DYE, LILY_OF_THE_VALLEY);

@@ -104,6 +104,21 @@ public class Blocks implements Listener {
     public static void harvestItem(Location loc, Material A, Material block) {
         harvestItem(loc, A, 1, block);
     }
+
+    // Drop (1) ItemStack when a particular block is broken - X in 16 CHANCE TO REPLACE WITH AIR
+    public static void harvestItem(Location loc, ItemStack item, Material block, int X) {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+            loc.getWorld().dropItem(loc.add(0.5,0.5,0.5), item);
+            loc.getBlock().setType(lrng8.XinSixten(X) ? AIR : block);
+        }, 0); // delay dropping item
+    }
+    // Drop (1) Material when a particular block is broken - X in 16 CHANCE TO REPLACE WITH AIR
+    public static void harvestItem(Location loc, Material A, int amt, Material block, int X) {
+        if (amt != 0) { harvestItem(loc, IS(A, amt), block, X); }
+    }
+    public static void harvestItem(Location loc, Material A, Material block, int X) {
+        harvestItem(loc, A, 1, block, X);
+    }
     
     // Quick helper function
     public static boolean typeNSEW(Location loc, Material material) {
@@ -143,6 +158,8 @@ public class Blocks implements Listener {
                 Leaves leaves = (Leaves) data;
                 if (leaves.getDistance() == 1 && !leaves.isPersistent()) {
                     dropItem(loc, Material.valueOf(material.name().split("_")[0] + "_SAPLING"));
+                } else if (isCleared(tool)) {
+                    dropItem(loc, STICK);
                 } else {
                     dropSelf(block);
                 }
@@ -207,10 +224,12 @@ public class Blocks implements Listener {
             // re-evaluate GRASS & MYCELIUM
             case DIRT, GRASS_BLOCK, MYCELIUM, SAND -> { if (isDug(tool)) dropSelf(block); }
             case SNOW -> {}
-            case CLAY -> {}
             case GRAVEL -> {
                 if (isDug(tool)) dropSelf(block);
-                else if (tool.getType() == AIR) harvestItem(loc, FLINT, 1, GRAVEL);
+                else if (tool.getType() == AIR) harvestItem(loc, FLINT, 1, GRAVEL, 1);
+            }
+            case CLAY -> {
+
             }
 
             // CHOPPING
@@ -252,7 +271,7 @@ public class Blocks implements Listener {
                 GOLDEN_SHOVEL, DIAMOND_SHOVEL, NETHERITE_SHOVEL);
         makeMaterialList(CHOP_TOOL, FLINT, WOODEN_AXE, STONE_AXE, IRON_AXE,
                 GOLDEN_AXE, DIAMOND_AXE, NETHERITE_AXE);
-        makeMaterialList(MINE_TOOL, FLINT, WOODEN_PICKAXE, STONE_PICKAXE, IRON_PICKAXE,
+        makeMaterialList(MINE_TOOL, WOODEN_PICKAXE, STONE_PICKAXE, IRON_PICKAXE,
                 GOLDEN_PICKAXE, DIAMOND_PICKAXE, NETHERITE_PICKAXE);
         makeMaterialList(CUT_TOOL, FLINT, WOODEN_SWORD, STONE_SWORD, IRON_SWORD,
                 GOLDEN_SWORD, DIAMOND_SWORD, NETHERITE_SWORD);
