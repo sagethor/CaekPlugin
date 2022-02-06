@@ -1,8 +1,12 @@
 package co.caek.plugin;
 
+import com.destroystokyo.paper.event.player.PlayerJumpEvent;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -17,6 +21,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Objects;
 
+import static org.bukkit.Bukkit.getServer;
+
 // should we add final keyboards to the events?
 
 public class Character implements Listener {
@@ -25,6 +31,19 @@ public class Character implements Listener {
         Player player = event.getPlayer();
         player.discoverRecipes(CaekPlugin.recipes);
         if (player.getGameMode() != GameMode.SURVIVAL) player.setGameMode(GameMode.SURVIVAL);
+    }
+
+    @EventHandler
+    public void onPlayerJump(PlayerJumpEvent event) {
+        // When jumping, chance to create desire path.
+        Block block = event.getTo().getBlock();
+        Player player = event.getPlayer();
+        if (lrng8.XinSixten(1) && lrng8.XinSixten(1)) {
+            switch (block.getType()) {
+                case GRASS_BLOCK -> block.setType(Material.DIRT_PATH);
+                case ICE -> block.setType(Material.WATER);
+            }
+        }
     }
 
     @EventHandler
