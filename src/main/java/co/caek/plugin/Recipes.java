@@ -5,7 +5,6 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.ItemMeta;
-
 import static co.caek.plugin.CaekPlugin.plugin;
 import static co.caek.plugin.CaekPlugin.server;
 import static org.bukkit.Material.*;
@@ -45,6 +44,25 @@ public class Recipes implements Listener {
     static public void addShaped(String key, Material result, int amt, Material A, String row) {
         addShaped(key, IS(result, amt), IS(A), row);
     }
+    // Add shaped recipe with (1) MaterialChoice
+    static public void addShaped(String key, ItemStack result, int amt, RecipeChoice.MaterialChoice A, String top, String mid, String bot) {
+        server.addRecipe(new ShapedRecipe(Recipes.newKey(key), result).shape(top, mid, bot).setIngredient('A', A));
+    }
+    static public void addShaped(String key, ItemStack result, int amt, RecipeChoice.MaterialChoice A, String top, String bot) {
+        server.addRecipe(new ShapedRecipe(Recipes.newKey(key), result).shape(top, bot).setIngredient('A', A));
+    }
+    static public void addShaped(String key, ItemStack result, int amt, RecipeChoice.MaterialChoice A, String row) {
+        server.addRecipe(new ShapedRecipe(Recipes.newKey(key), result).shape(row).setIngredient('A', A));
+    }
+    static public void addShaped(String key, Material result, int amt, RecipeChoice.MaterialChoice A, String top, String mid, String bot) {
+        addShaped(key, IS(result), amt, A, top, mid, bot);
+    }
+    static public void addShaped(String key, Material result, int amt, RecipeChoice.MaterialChoice A, String top, String bot) {
+        addShaped(key, IS(result), amt, A, top, bot);
+    }
+    static public void addShaped(String key, Material result, int amt, RecipeChoice.MaterialChoice A, String row) {
+        addShaped(key, IS(result), amt, A, row);
+    }
 
     // Add shaped recipe with (2) ItemStacks
     static public void addShaped(String key, ItemStack result, ItemStack A, ItemStack B, String top, String mid, String bot) {
@@ -65,6 +83,25 @@ public class Recipes implements Listener {
     }
     static public void addShaped(String key, Material result, int amt, Material A, Material B, String row) {
         addShaped(key, IS(result, amt), IS(A), IS(B), row);
+    }
+    // Add shaped recipe with (1) MaterialChoice & (1) Material -- add other permutations as needed.
+    static public void addShaped(String key, ItemStack result, int amt, RecipeChoice.MaterialChoice A, Material B, String top, String mid, String bot) {
+        server.addRecipe(new ShapedRecipe(Recipes.newKey(key), result).shape(top, mid, bot).setIngredient('A', A).setIngredient('B', B));
+    }
+    static public void addShaped(String key, ItemStack result, int amt, RecipeChoice.MaterialChoice A, Material B, String top, String bot) {
+        server.addRecipe(new ShapedRecipe(Recipes.newKey(key), result).shape(top, bot).setIngredient('A', A).setIngredient('B', B));
+    }
+    static public void addShaped(String key, ItemStack result, int amt, RecipeChoice.MaterialChoice A, Material B, String row) {
+        server.addRecipe(new ShapedRecipe(Recipes.newKey(key), result).shape(row).setIngredient('A', A).setIngredient('B', B));
+    }
+    static public void addShaped(String key, Material result, int amt, RecipeChoice.MaterialChoice A, Material B, String top, String mid, String bot) {
+        addShaped(key, IS(result), amt, A, B, top, mid, bot);
+    }
+    static public void addShaped(String key, Material result, int amt, RecipeChoice.MaterialChoice A, Material B, String top, String bot) {
+        addShaped(key, IS(result), amt, A, B, top, bot);
+    }
+    static public void addShaped(String key, Material result, int amt, RecipeChoice.MaterialChoice A, Material B, String row) {
+        addShaped(key, IS(result), amt, A, B, row);
     }
 
     // Add shaped recipe with (3) ItemStacks
@@ -262,10 +299,13 @@ public class Recipes implements Listener {
         addCampfire("campfire_salmon", COOKED_SALMON, SALMON);
         addCampfire("campfire_potato", BAKED_POTATO, POTATO);
     }
-    
+
+    // Custom defined MaterialChoices - consider making a separate class to hold these to share with other classes?
+    static RecipeChoice.MaterialChoice COALS = new RecipeChoice.MaterialChoice(COAL, CHARCOAL);
+    static RecipeChoice.MaterialChoice LOGS = new RecipeChoice.MaterialChoice(ACACIA_LOG, BIRCH_LOG, JUNGLE_LOG, DARK_OAK_LOG, OAK_LOG, SPRUCE_LOG);
     static public void shapedRecipes() {
-        addShaped("coal_torch", TORCH, 4, COAL, STICK, "A", "B");
-        addShaped("charcoal_torch", TORCH, 4, CHARCOAL, STICK, "A", "B");
+        addShaped("coal_torch", TORCH, 4, COALS, STICK, "A", "B");
+        addShaped("campfire", CAMPFIRE, 1, LOGS, STICK, "BB", "AA");
     }
 
     static public void addRecipes() {
