@@ -1,12 +1,10 @@
 package co.caek.plugin;
 
 import com.destroystokyo.paper.event.player.PlayerJumpEvent;
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -20,8 +18,6 @@ import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Objects;
-
-import static org.bukkit.Bukkit.getServer;
 
 // should we add final keyboards to the events?
 
@@ -73,11 +69,14 @@ public class Character implements Listener {
         assert bow != null;
         ItemMeta meta = bow.getItemMeta();
         if (!(meta instanceof Damageable dmg)) return;
-        if (dmg.getDamage() + 16 <= bow.getType().getMaxDurability()) {
-            dmg.setDamage(dmg.getDamage() + 16);
+        int damage = lrng8.rand() * 3;
+        if (dmg.getDamage() + damage <= bow.getType().getMaxDurability()) {
+            dmg.setDamage(dmg.getDamage() + damage);
+            bow.setItemMeta(dmg);
+        } else {
+            dmg.setDamage(bow.getType().getMaxDurability());
             bow.setItemMeta(dmg);
         }
-        // add code later for when bow breaks (set stack to 0) and have skeleton melee attack player?
     }
 
     @EventHandler
